@@ -35,7 +35,7 @@ Page({
     wx.cloud.callFunction({
       name: 'sum',
       data: {
-        a: 1,
+        a: 7,
         b: 2
       },
       success: res => {

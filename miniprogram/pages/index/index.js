@@ -45,7 +45,7 @@ Page({
       })
     }
   },
-
+  
   onGetOpenid: function() {
     // 调用云函数
     wx.cloud.callFunction({

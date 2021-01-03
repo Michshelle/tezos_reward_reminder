@@ -1,0 +1,23 @@
+<!-- 显示所有的登记信息 -->
+<view class="div">
+<text class="head">登记用户的信息</text>
+<view  wx:for="{{list}}" wx:key="id">
+ <view class="vw">
+  <label for="" class="font14" class="cs">姓名</label>
+    <label for="" class="font14" class="cs">{{item.name}}</label>
+    </view>
+    <view class="vw">
+     <label for="" class="font14" class="cs">手机号码</label>
+       <label for="" class="font14" class="cs">{{item.tell}}</label>
+          </view>
+    <view class="vw">
+        <label for="" class="font14" class="cs">住址</label>
+        <label for="" class="font14" class="cs">{{item.address}}</label>
+           </view>
+    <view class="vw">
+         <label for="" class="font14" class="cs">佛语</label>
+         <label for="" class="font14" class="cs">{{item.fo}}</label>
+    </view>
+    <view class='line'></view>
+</view>
+</view>
