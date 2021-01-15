@@ -17,9 +17,28 @@
     "backgroundColor": "#F6F6F6",
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#F6F6F6",
-    "navigationBarTitleText": "云开发 QuickStart",
+    "navigationBarTitleText": "Tezo烘焙奖励提醒",
     "navigationBarTextStyle": "black"
   },
+  "tabBar": {
+    "backgroundColor": "#000",
+    "color": "#8B658B",
+    "list":[
+      {
+        "pagePath": "pages/index/index",
+        "text": "订阅的tezos地址"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "添加tezos地址"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "给我留言"
+      }
+    ]
+  },
+
   "sitemapLocation": "sitemap.json",
   "style": "v2"
 }

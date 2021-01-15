@@ -1,7 +1,7 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 cloud.init()
-const { templateId } = 'pOwTOh7WrXA9ZNlGkmQtPL2PGz3YBKFm7_28ix0mLHQ' //从订阅消息那里选择对应模板就可以拿到。
+const { templateId } = 'pOwTOh7WrXA9ZNlGkmQtPEcZYzxk3SbdXkbVmQ0w03I' //从订阅消息那里选择对应模板就可以拿到。
 // 云函数入口函数
 exports.main = async (event, context) => {
 
