@@ -1,8 +1,8 @@
 {
   "pages": [
     "pages/index/index",
+    "custom-tab-bar/index",
     "pages/userConsole/userConsole",
-    "pages/reminderTemplate/reminderTemplate",
     "pages/storageConsole/storageConsole",
     "pages/databaseGuide/databaseGuide",
     "pages/addFunction/addFunction",
@@ -21,20 +21,16 @@
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
-    "backgroundColor": "#000",
-    "color": "#8B658B",
+    "custom": true,
     "list":[
       {
-        "pagePath": "pages/index/index",
-        "text": "订阅的tezos地址"
+        "pagePath": "pages/index/index"
       },
       {
-        "pagePath": "pages/index/index",
-        "text": "添加tezos地址"
+        "pagePath": "pages/index/index"
       },
       {
-        "pagePath": "pages/index/index",
-        "text": "给我留言"
+        "pagePath": "pages/openapi/callback/callback"
       }
     ]
   },

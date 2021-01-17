@@ -1,0 +1,23 @@
+<!--miniprogram/custom-tab-bar/index.wxml-->
+<view class="tab-bar">
+  <view class="tab-bar-border"></view>
+  <view wx:for="{{list}}" wx:key="index" class="tab-bar-item" data-path="{{item.pagePath}}" data-index="{{index}}" bindtap="switchTab">
+    <!--去掉导航栏的图片<cover-image src="{{selected === index ? item.selectedIconPath : item.iconPath}}"></cover-image>-->
+    <view wx:if="{{index === 0}}" >     
+      <button bindtap="clientSendMsg">
+        我的地址
+      </button> 
+    </view>
+    <view wx:if="{{index === 1}}">     
+      <button>
+        添加地址
+      </button> 
+    </view>   
+    <view wx:if="{{index === 2}}">     
+      <button open-type="contact" bindcontact="onCustomerServiceButtonClick">
+        给我留言
+      </button> 
+    </view>
+
+  </view>
+</view>

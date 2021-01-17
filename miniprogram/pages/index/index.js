@@ -14,8 +14,14 @@ function initData(that) {
   msgList = [{
       speaker: 'server',
       contentType: 'text',
-      content: '你好，欢迎使用Tezos烘焙奖励提醒！'
+      content: '感谢使用tezos烘焙奖励提醒！'
+    },
+    {
+      speaker: 'server',
+      contentType: 'text',
+      content: '请使用底部菜单进行操作'
     }
+    
   ]
   that.setData({
     msgList,
@@ -31,6 +37,8 @@ function initData(that) {
    query.select('.scrollMsg').boundingClientRect(function(rect) {
    }).exec();
  }
+
+
 
 Page({
 
@@ -72,6 +80,8 @@ Page({
     this.setData({
 
     });
+    //console.log('a');
+
 
   },
 
@@ -109,7 +119,7 @@ Page({
       inputBottom: keyHeight + 'px'
     })
     //计算msg高度
-    // calScrollHeight(this, keyHeight);
+    calScrollHeight(this, keyHeight);
 
   },
 
@@ -139,15 +149,48 @@ Page({
       msgList,
       inputVal
     });
-
-
   },
+
+
+
 
   /**
    * 退回上一页
    */
   toBackClick: function() {
     wx.navigateBack({})
+  },
+  
+  methods: {
+
+    clientSendMessage() {
+      msgList.push({
+        speaker: 'customer',
+        contentType: 'text',
+        content: "已订阅的tezos地址"
+      })
+      inputVal = '';
+      var other = getCurrentPages()[0]
+      other.setData({
+        msgList,
+        inputVal
+      });
+
+    }
   }
 
 })
+
+function sendingMessage() {
+  msgList.push({
+    speaker: 'customer',
+    contentType: 'text',
+    content: "已订阅地址"
+  })
+  inputVal = '';
+  Page.setData({
+    msgList,
+    inputVal
+  });
+
+}
