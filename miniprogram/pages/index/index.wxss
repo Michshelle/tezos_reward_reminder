@@ -15,6 +15,7 @@ page {
   margin-left: -1.6vw;
   border-radius: 10rpx;
   z-index: 10;
+  word-break:break-all;
 }
 
 .rightMsg {

@@ -17,6 +17,10 @@ Component({
       {
         "current": 2,
         "pagePath": "index",
+      },
+      {
+        "current": 3,
+        "pagePath": "index",
       }
     ]
   },
@@ -37,7 +41,8 @@ Component({
 
     clientSendMsg() {
       var curPage = getCurrentPages()[0]
-      curPage.methods.clientSendMessage();     
+      curPage.methods.clientSendMessage();   
+
     },
 
    

@@ -1,7 +1,7 @@
 //app.js
 App({
   globalData: {
-    myAddress: null
+    openid: null, //自定义
   },
   onLaunch: function () {
     if (!wx.cloud) {

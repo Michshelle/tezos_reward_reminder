@@ -30,6 +30,9 @@
         "pagePath": "pages/index/index"
       },
       {
+        "pagePath": "pages/index/index"
+      },
+      {
         "pagePath": "pages/openapi/callback/callback"
       }
     ]

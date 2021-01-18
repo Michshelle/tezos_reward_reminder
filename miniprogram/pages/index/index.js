@@ -76,10 +76,22 @@ Page({
         }
       }
     })
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {},
+      success: res => {
+        //console.log('[云函数] [login] user openid: ', res.result.openid)
+        app.globalData.openid = res.result.openid
+      },
+      fail: err => {
+        console.error('[云函数] [login] 调用失败', err)
+      }
+    })
     initData(this);
     this.setData({
 
     });
+
     //console.log('a');
 
 
@@ -174,9 +186,39 @@ Page({
       other.setData({
         msgList,
         inputVal
-      });
+      }); 
+    const db = wx.cloud.database()
+     db.collection('xtz_subscription').where({
+       open_id: app.globalData.openid
+     }).get({
+       success: res => {
+        var str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
+        var beautify_str_res = str_res.split(":")[1].split("}")[0]
+        beautify_str_res = beautify_str_res.split("\"")[1].replace(/,/g,"\n|\n");
+        msgList.push({
+          speaker: 'server',
+          contentType: 'text',
+          content: beautify_str_res
+        })
+        inputVal = '';
+         other.setData({
+          msgList,
+          inputVal
+         })
+         console.log('[数据库] [查询记录] 成功: ', res)
+       },
+       fail: err => {
+         wx.showToast({
+           icon: 'none',
+           title: '查询记录失败'
+         })
+         console.error('[数据库] [查询记录] 失败：', err)
+       }
+     })
 
-    }
+
+
+    },
   }
 
 })

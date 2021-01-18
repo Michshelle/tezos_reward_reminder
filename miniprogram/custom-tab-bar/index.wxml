@@ -12,8 +12,13 @@
       <button>
         添加地址
       </button> 
-    </view>   
+    </view> 
     <view wx:if="{{index === 2}}">     
+      <button>
+        删除地址
+      </button> 
+    </view> 
+    <view wx:if="{{index === 3}}">     
       <button open-type="contact" bindcontact="onCustomerServiceButtonClick">
         给我留言
       </button> 
