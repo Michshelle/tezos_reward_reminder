@@ -146,6 +146,33 @@ Page({
     })
 
   },
+  /**
+   * 点击符号发送
+   */
+  getInputVal: function(e){
+    if(e.detail.value){
+      this.setData({
+        keyWord: e.detail.value
+      })
+    }
+  },
+  sendSymbol: function() {
+    if(this.data.keyWord){
+      msgList.push({
+        speaker: 'customer',
+        contentType: 'text',
+        content: this.data.keyWord
+      })
+      inputVal = '';
+      this.setData({
+        msgList,
+        inputVal
+      });
+
+    }
+    this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel)
+
+  },
 
   /**
    * 发送点击监听
@@ -161,6 +188,13 @@ Page({
       msgList,
       inputVal
     });
+    this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel)
+  },
+  clickDisappear: function() {
+    this.setData({
+      inputIsShowAdd: false,
+      inputIsShowDel: false,
+    })
   },
 
 
@@ -214,18 +248,19 @@ Page({
          console.error('[数据库] [查询记录] 失败：', err)
        }
      })
-
-
-
     },
-    clientAddAddress() {
 
-      var input_flag = 1;
-      var other = getCurrentPages()[0]
-      other.setData({
-        input_flag
-      }); 
-      
+    dbExecute(add_bool, del_bool) {
+
+      if(add_bool==true && del_bool==false){
+
+      }
+
+      if(add_bool==false && del_bool==true){
+
+      }
+
+
     },
   }
 

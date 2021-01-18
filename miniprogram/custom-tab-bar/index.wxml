@@ -13,7 +13,7 @@
         添加地址
       </button> 
     </view> 
-    <view wx:if="{{index === 2}}">     
+    <view wx:if="{{index === 2}}" bindtap="delAddress">     
       <button>
         删除地址
       </button> 

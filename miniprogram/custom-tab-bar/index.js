@@ -45,8 +45,18 @@ Component({
     },
     addAddress() {
       var curPage = getCurrentPages()[0]
-      curPage.methods.clientAddAddress(); 
-    }
+      curPage.setData({
+        inputIsShowDel: false,
+        inputIsShowAdd: true
+      })
+    },
+    delAddress() {
+      var curPage = getCurrentPages()[0]
+      curPage.setData({
+        inputIsShowDel: true,
+        inputIsShowAdd: false
+      })
+    },
 
    
   }
