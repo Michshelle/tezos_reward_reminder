@@ -42,8 +42,11 @@ Component({
     clientSendMsg() {
       var curPage = getCurrentPages()[0]
       curPage.methods.clientSendMessage();   
-
     },
+    addAddress() {
+      var curPage = getCurrentPages()[0]
+      curPage.methods.clientAddAddress(); 
+    }
 
    
   }

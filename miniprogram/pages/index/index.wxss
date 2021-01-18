@@ -5,7 +5,6 @@ page {
   background-color: #f1f1f1;
 }
 
-
 .leftMsg {
   font-size: 35rpx;
   color: #444;
@@ -28,3 +27,24 @@ page {
   border-radius: 10rpx;
   z-index: 10;
 }
+
+.inputRoom {
+  width: 100vw;
+  top: 163vw;
+  height: 10vw;
+  border-top: 1px solid green;
+  background-color: #f1f1f1;
+  position: fixed;
+  display: flex;
+  align-items: center;
+}
+
+input {
+  width: 76vw;
+  background-color: #fff;
+  border-radius: 40rpx;
+  margin-left: 2vw;
+  font-size: 28rpx;
+  color: #444;
+}
+

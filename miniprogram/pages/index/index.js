@@ -174,7 +174,6 @@ Page({
   },
   
   methods: {
-
     clientSendMessage() {
       msgList.push({
         speaker: 'customer',
@@ -218,6 +217,15 @@ Page({
 
 
 
+    },
+    clientAddAddress() {
+
+      var input_flag = 1;
+      var other = getCurrentPages()[0]
+      other.setData({
+        input_flag
+      }); 
+      
     },
   }
 
