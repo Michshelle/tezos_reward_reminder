@@ -91,10 +91,6 @@ Page({
     this.setData({
 
     });
-
-    //console.log('a');
-
-
   },
 
   /**
@@ -170,8 +166,21 @@ Page({
       });
 
     }
-    this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel,this.data.keyWord)
+    if (this.methods.validateInput(this.data.keyWord) == true){
+      this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel,this.data.keyWord)
+    }else{
 
+      msgList.push({
+        speaker: 'server',
+        contentType: 'text',
+        content: "非法输入，添加不成功"
+      })
+      inputVal = '';
+       this.setData({
+        msgList,
+        inputVal
+       })
+    }
   },
 
   /**
@@ -188,7 +197,20 @@ Page({
       msgList,
       inputVal
     });
-    this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel,e.detail.value)
+    if(this.methods.validateInput(e.detail.value) == true){
+      this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel,e.detail.value)
+    }else{
+      msgList.push({
+        speaker: 'server',
+        contentType: 'text',
+        content: "非法输入，添加不成功"
+      })
+      inputVal = '';
+       this.setData({
+        msgList,
+        inputVal
+       })
+    }
   },
   clickDisappear: function() {
     this.setData({
@@ -205,6 +227,15 @@ Page({
   },
   
   methods: {
+    validateInput(str_val) { 
+      var  pattern =  /^[0-9a-z,]+$/ 
+      if  (pattern.test(str_val) && str_val.length < 190) { 
+        return  true 
+      }  else  { 
+        console.log(pattern.test(str_val))
+        return  false 
+      } 
+   }, 
     clientSendMessage() {
       msgList.push({
         speaker: 'customer',
@@ -224,9 +255,9 @@ Page({
        success: res => {
         var beautify_str_res = "您没有订阅的地址"
         if (res.data.length == 1){
-          var str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
-          beautify_str_res = str_res.split(":")[1].split("}")[0]
-          beautify_str_res = beautify_str_res.split("\"")[1].replace(/,/g,"\n|\n");
+          beautify_str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
+          //beautify_str_res = str_res.split(":")[1].split("}")[0]
+          //beautify_str_res = beautify_str_res.split("\"")[1].replace(/,/g,"\n|\n");
         }
         msgList.push({
           speaker: 'server',
@@ -251,9 +282,33 @@ Page({
     },
 
     dbExecute(add_bool, del_bool,str_content) {
-
       const db = wx.cloud.database()
+      db.collection('xtz_subscription').where({
+        open_id: app.globalData.openid
+      }).get({
+        success: res => {
+          if (res.data.length > 0) {
 
+          }
+          else {
+
+            db.collection('xtz_subscription').add({
+              data: {
+                open_id: app.globalData.openid,
+                subscribed_addresses: str_content.split(","),
+              },
+            })
+
+          }
+        },
+        fail: err => {
+          wx.showToast({
+            icon: 'none',
+            title: '查询记录失败'
+          })
+          console.error('[数据库] [查询记录] 失败：', err)
+        }
+      })
       if(add_bool==true && del_bool==false){
         db.collection('xtz_subscription').where({
           open_id: app.globalData.openid
