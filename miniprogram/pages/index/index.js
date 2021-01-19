@@ -232,7 +232,6 @@ Page({
       if  (pattern.test(str_val) && str_val.length < 190) { 
         return  true 
       }  else  { 
-        console.log(pattern.test(str_val))
         return  false 
       } 
    }, 
@@ -283,23 +282,75 @@ Page({
 
     dbExecute(add_bool, del_bool,str_content) {
       const db = wx.cloud.database()
+      var other = getCurrentPages()[0]
       db.collection('xtz_subscription').where({
         open_id: app.globalData.openid
       }).get({
         success: res => {
-          if (res.data.length > 0) {
+          if(add_bool==true && del_bool==false){
+            if (res.data.length > 0) {
+              db.collection('xtz_subscription').where({
+                open_id: app.globalData.openid
+              }).update({
+                data: {
+                  subscribed_addresses: str_content
+                },
+                success: res => {
+                  msgList.push({
+                    speaker: 'server',
+                    contentType: 'text',
+                    content: "添加成功！"
+                  })
+                  inputVal = '';
+                  other.setData({
+                   msgList,
+                   inputVal
+                  })
+                },
+                fail: err => {
+                  wx.showToast({
+                    icon: 'none',
+                    title: '查询记录失败'
+                  })
+                  console.error('[数据库] [查询记录] 失败：', err)
+                }
+              })  
+            } else {
+              db.collection('xtz_subscription').add({
+                data: {
+                  open_id: app.globalData.openid,
+                  subscribed_addresses: str_content.split(","),
+                },
+                success: res => {
+                  msgList.push({
+                    speaker: 'server',
+                    contentType: 'text',
+                    content: "添加新记录成功"
+                  })
+                  inputVal = '';
+                   other.setData({
+                    msgList,
+                    inputVal
+                   })
+                 },
+                 fail: err => {
+                   wx.showToast({
+                     icon: 'none',
+                     title: '查询记录失败'
+                   })
+                 }
+              })
+            }
+  
+            }
 
-          }
-          else {
+            if(add_bool==false && del_bool==true){
 
-            db.collection('xtz_subscription').add({
-              data: {
-                open_id: app.globalData.openid,
-                subscribed_addresses: str_content.split(","),
-              },
-            })
+            }
 
-          }
+
+          
+
         },
         fail: err => {
           wx.showToast({
@@ -309,57 +360,7 @@ Page({
           console.error('[数据库] [查询记录] 失败：', err)
         }
       })
-      if(add_bool==true && del_bool==false){
-        db.collection('xtz_subscription').where({
-          open_id: app.globalData.openid
-        }).update({
-          data: {
-            subscribed_addresses: str_content
-          },
-          success: res => {
-            msgList.push({
-              speaker: 'server',
-              contentType: 'text',
-              content: "添加成功！"
-            })
-            inputVal = '';
-            var other = getCurrentPages()[0]
-            other.setData({
-             msgList,
-             inputVal
-            })
-          },
-          fail: err => {
-            wx.showToast({
-              icon: 'none',
-              title: '查询记录失败'
-            })
-            console.error('[数据库] [查询记录] 失败：', err)
-          }
-        })
-        
-      }
+    }
+ }
 
-      if(add_bool==false && del_bool==true){
-
-      }
-
-
-    },
-  }
-
-})
-
-function sendingMessage() {
-  msgList.push({
-    speaker: 'customer',
-    contentType: 'text',
-    content: "已订阅地址"
-  })
-  inputVal = '';
-  Page.setData({
-    msgList,
-    inputVal
-  });
-
-}
+}) 
