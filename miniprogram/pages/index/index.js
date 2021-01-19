@@ -54,12 +54,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-    if (!wx.cloud) {
-      wx.redirectTo({
-        url: '../chooseLib/chooseLib',
-      })
-    return
-    }
+   if (!wx.cloud) {
+     wx.redirectTo({
+       url: '../chooseLib/chooseLib',
+     })
+   return
+   }
     // 获取用户信息
     wx.getSetting({
       success: res => {
@@ -170,7 +170,7 @@ Page({
       });
 
     }
-    this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel)
+    this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel,this.data.keyWord)
 
   },
 
@@ -188,7 +188,7 @@ Page({
       msgList,
       inputVal
     });
-    this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel)
+    this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel,e.detail.value)
   },
   clickDisappear: function() {
     this.setData({
@@ -217,14 +217,17 @@ Page({
         msgList,
         inputVal
       }); 
-    const db = wx.cloud.database()
+     const db = wx.cloud.database()
      db.collection('xtz_subscription').where({
        open_id: app.globalData.openid
      }).get({
        success: res => {
-        var str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
-        var beautify_str_res = str_res.split(":")[1].split("}")[0]
-        beautify_str_res = beautify_str_res.split("\"")[1].replace(/,/g,"\n|\n");
+        var beautify_str_res = "您没有订阅的地址"
+        if (res.data.length == 1){
+          var str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
+          beautify_str_res = str_res.split(":")[1].split("}")[0]
+          beautify_str_res = beautify_str_res.split("\"")[1].replace(/,/g,"\n|\n");
+        }
         msgList.push({
           speaker: 'server',
           contentType: 'text',
@@ -247,10 +250,39 @@ Page({
      })
     },
 
-    dbExecute(add_bool, del_bool) {
+    dbExecute(add_bool, del_bool,str_content) {
+
+      const db = wx.cloud.database()
 
       if(add_bool==true && del_bool==false){
-
+        db.collection('xtz_subscription').where({
+          open_id: app.globalData.openid
+        }).update({
+          data: {
+            subscribed_addresses: str_content
+          },
+          success: res => {
+            msgList.push({
+              speaker: 'server',
+              contentType: 'text',
+              content: "添加成功！"
+            })
+            inputVal = '';
+            var other = getCurrentPages()[0]
+            other.setData({
+             msgList,
+             inputVal
+            })
+          },
+          fail: err => {
+            wx.showToast({
+              icon: 'none',
+              title: '查询记录失败'
+            })
+            console.error('[数据库] [查询记录] 失败：', err)
+          }
+        })
+        
       }
 
       if(add_bool==false && del_bool==true){
