@@ -1,9 +1,12 @@
 const app = getApp();
 var inputVal = '';
 var msgList = [];
+var too_long_array = 0;
 var windowWidth = wx.getSystemInfoSync().windowWidth;
 var windowHeight = wx.getSystemInfoSync().windowHeight;
 var keyHeight = 0;
+
+
 
 /**
  * 初始化数据
@@ -80,7 +83,7 @@ Page({
       name: 'login',
       data: {},
       success: res => {
-        //console.log('[云函数] [login] user openid: ', res.result.openid)
+
         app.globalData.openid = res.result.openid
       },
       fail: err => {
@@ -283,49 +286,133 @@ Page({
     dbExecute(add_bool, del_bool,str_content) {
       const db = wx.cloud.database()
       var other = getCurrentPages()[0]
-      db.collection('xtz_subscription').where({
+      var input_arr = str_content.split(",")
+
+      if (input_arr.length < 6) {      db.collection('xtz_subscription').where({
         open_id: app.globalData.openid
       }).get({
         success: res => {
-          if(add_bool==true && del_bool==false){
-            if (res.data.length > 0) {
-              db.collection('xtz_subscription').where({
-                open_id: app.globalData.openid
-              }).update({
-                data: {
-                  subscribed_addresses: str_content
-                },
-                success: res => {
-                  msgList.push({
-                    speaker: 'server',
-                    contentType: 'text',
-                    content: "添加成功！"
-                  })
-                  inputVal = '';
-                  other.setData({
-                   msgList,
-                   inputVal
-                  })
-                },
-                fail: err => {
-                  wx.showToast({
-                    icon: 'none',
-                    title: '查询记录失败'
-                  })
-                  console.error('[数据库] [查询记录] 失败：', err)
+          if (res.data.length == 0 && add_bool==true && del_bool==false){
+            db.collection('xtz_subscription').add({
+              data: {
+                open_id: app.globalData.openid,
+                subscribed_addresses: str_content.split(","),
+              },
+              success: res => {
+                msgList.push({
+                  speaker: 'server',
+                  contentType: 'text',
+                  content: "添加新记录成功"
+                })
+                inputVal = '';
+                 other.setData({
+                  msgList,
+                  inputVal
+                 })
+               },
+               fail: err => {
+                 wx.showToast({
+                   icon: 'none',
+                   title: '查询记录失败'
+                 })
+               }
+            })
+
+          }
+
+          if (res.data.length == 1 && add_bool==true && del_bool==false){
+            var orig_arr = res.data[0].subscribed_addresses
+            for (var k=0; k<input_arr.length; k++){
+                if (input_arr[k] != orig_arr){
+                  if (orig_arr.length < 5) {
+                    orig_arr.push(
+                      input_arr[k],
+                    ) 
+                  } else { //数组添加大于了5个
+
+                    too_long_array = 1;
+
+
+                  }
+
                 }
-              })  
-            } else {
-              db.collection('xtz_subscription').add({
-                data: {
-                  open_id: app.globalData.openid,
-                  subscribed_addresses: str_content.split(","),
-                },
+
+              } 
+              if (too_long_array==0){
+                db.collection('xtz_subscription').where({
+                  open_id: app.globalData.openid
+                }).update({
+                  data: {
+                    subscribed_addresses: orig_arr
+                  },
+                  success: res => {
+                    msgList.push({
+                      speaker: 'server',
+                      contentType: 'text',
+                      content: "添加成功！"
+                    })
+                    inputVal = '';
+                    other.setData({
+                     msgList,
+                     inputVal
+                    })
+                    console.log('[数据库] [修改记录] 成功: ', res)
+                  },
+                  fail: err => {
+                    wx.showToast({
+                      icon: 'none',
+                      title: '查询记录失败'
+                    })
+                    console.error('[数据库] [修改记录] 失败：', err)
+                  }
+                }) 
+              } else {
+
+                    too_long_array = 0
+                    msgList.push({
+                      speaker: 'server',
+                      contentType: 'text',
+                      content: "对不起，您最多只能添加五个不同地址"
+                    })
+                    inputVal = '';
+                    other.setData({
+                     msgList,
+                     inputVal
+                    })
+              }             
+
+          }
+
+          if(res.data.length == 0 && add_bool==false && del_bool==true){
+            msgList.push({
+              speaker: 'server',
+              contentType: 'text',
+              content: "无法删除，您没有订阅地址！"
+            })
+            inputVal = '';
+             other.setData({
+              msgList,
+              inputVal
+             })
+          }
+
+          if(res.data.length == 1 && add_bool==false && del_bool==true){
+            var orig_arr = res.data[0].subscribed_addresses
+            var del_all = 0;
+            var address_to_del = 0
+            for (var k=0; k<input_arr.length; k++){
+              if(orig_arr.indexOf(input_arr[k]) > -1){
+                del_all = del_all + 1 
+                address_to_del = 1
+              }
+            }
+            if(del_all==orig_arr.length){
+              db.collection("xtz_subscription").where({open_id: app.globalData.openid}).remove({
                 success: res => {
                   msgList.push({
                     speaker: 'server',
                     contentType: 'text',
-                    content: "添加新记录成功"
+                    content: "已全部删除，目前已无订阅"
                   })
                   inputVal = '';
                    other.setData({
@@ -336,21 +423,67 @@ Page({
                  fail: err => {
                    wx.showToast({
                      icon: 'none',
-                     title: '查询记录失败'
+                     title: '删除记录失败'
                    })
                  }
+                })
+            }
+
+            if (address_to_del == 1 ){
+
+              for (var k=0; k<input_arr.length; k++){
+                if(orig_arr.indexOf(input_arr[k]) > -1){
+                  orig_arr.splice(orig_arr.indexOf(input_arr[k]),1)
+                }
+              }
+              db.collection('xtz_subscription').where({
+                open_id: app.globalData.openid
+              }).update({
+                data: {
+                  subscribed_addresses: orig_arr
+                },
+                success: res => {
+                  msgList.push({
+                    speaker: 'server',
+                    contentType: 'text',
+                    content: "删除地址成功！"
+                  })
+                  inputVal = '';
+                  other.setData({
+                   msgList,
+                   inputVal
+                  })
+                  console.log('[数据库] [修改记录] 成功: ', res)
+                },
+                fail: err => {
+                  wx.showToast({
+                    icon: 'none',
+                    title: '更新删除失败'
+                  })
+                  console.error('[数据库] [修改记录] 失败：', err)
+                }
+              }) 
+              
+              address_to_del = 0
+
+            } else {
+
+              msgList.push({
+                speaker: 'server',
+                contentType: 'text',
+                content: "没有任何地址存在于已有列表"
               })
-            }
-  
+              inputVal = '';
+              other.setData({
+               msgList,
+               inputVal
+              })
+
             }
 
-            if(add_bool==false && del_bool==true){
-
-            }
-
+          }
 
           
-
         },
         fail: err => {
           wx.showToast({
@@ -359,7 +492,22 @@ Page({
           })
           console.error('[数据库] [查询记录] 失败：', err)
         }
-      })
+      })  
+
+      } else {
+        msgList.push({
+          speaker: 'server',
+          contentType: 'text',
+          content: "对不起，您最多只能添加五个不同地址"
+        })
+        inputVal = '';
+        other.setData({
+         msgList,
+         inputVal
+        })
+      }
+      
+       
     }
  }
 

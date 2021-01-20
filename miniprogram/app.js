@@ -2,6 +2,7 @@
 App({
   globalData: {
     openid: null, //自定义
+
   },
   onLaunch: function () {
     if (!wx.cloud) {
