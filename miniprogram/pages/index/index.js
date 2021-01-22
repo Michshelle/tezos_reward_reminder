@@ -478,11 +478,8 @@ Page({
                msgList,
                inputVal
               })
-
             }
-
           }
-
           
         },
         fail: err => {
@@ -505,9 +502,7 @@ Page({
          msgList,
          inputVal
         })
-      }
-      
-       
+      }     
     }
  }
 
