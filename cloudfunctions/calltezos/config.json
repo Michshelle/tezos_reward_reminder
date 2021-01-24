@@ -1,9 +1,12 @@
 {
   "triggers": [
     {
-      "name": "tezosTrigger",
+      "name": "tezosCrawltrigger",
       "type": "timer",
-      "config": "0 0 10,14,16,23 * * * *"
+      "config": "0 */1 * * *"
     }
-  ]
+  ],
+  "permissions": {
+    "openapi": []
+  }
 }

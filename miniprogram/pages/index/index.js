@@ -231,7 +231,7 @@ Page({
   
   methods: {
     validateInput(str_val) { 
-      var  pattern =  /^[0-9a-z,]+$/ 
+      var  pattern =  /^[0-9a-zA-Z,]+$/ 
       if  (pattern.test(str_val) && str_val.length < 190) { 
         return  true 
       }  else  { 
