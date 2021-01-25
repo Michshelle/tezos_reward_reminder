@@ -34,6 +34,29 @@
   <view style='width: 100%; height: 18vw;'></view>
 </scroll-view>
 
+<view class='toast-box' hidden='{{isEmail}}'>
+        <view class='toastbg'></view>
+        <view class='showToast'>
+            <view class='toast-title'>
+                <text>邮件订阅</text>
+            </view>
+            <view class='toast-main'>
+                <view class='toast-input'>
+                    <input class="pop-window" placeholder='请输入邮箱地址' bindinput='getInputVal'></input>
+                </view>
+            </view>
+            <view class='toast-button'>
+                <view class='button1'>
+                    <button class="narrow-button" bindtap='cancelOn'>取消</button>
+                </view>
+                <view class='button2'>
+                    <button class="narrow-button" bindtap='confirmOn'>确定</button>
+                </view>
+            </view>
+        </view>
+</view>
+
+
  <view wx:if="{{inputIsShowAdd}}" class='inputRoom' style='bottom: 0px;'>
   <button bindtap="clickDisappear" style='height: 100rpx; width: 90rpx; padding: 0'>
     <image style='width: 8vw; padding: 22rpx 20rpx;' src='../../images/pic_icon.png' mode='widthFix'></image>

@@ -50,7 +50,10 @@ Page({
    */
   data: {
     scrollHeight: '100vh',
-    inputBottom: 0
+    inputBottom: 0,
+    isEmail: true,
+    inputIsShowAdd: false,
+    inputIsShowAdd: false
   },
 
   /**
@@ -155,6 +158,27 @@ Page({
       })
     }
   },
+ /**
+  * 对话框的弹出确定
+  */
+ confirmOn: function(){
+   if(this.methods.validateEmail(this.data.keyWord)){
+     this.methods.dbExecuteEmail(this.data.keyWord)
+   }else{
+     console.log(app.globalData.openid + " WRONG email: " + this.data.keyWord)
+   }
+ },
+
+  /**
+  * 对话框的弹出取消
+  */
+  cancelOn: function(){
+    console.log(app.globalData.openid + " 取消了email输入")
+  },
+
+  /**
+   * 导航栏的send
+   */
   sendSymbol: function() {
     if(this.data.keyWord){
       msgList.push({
@@ -172,7 +196,6 @@ Page({
     if (this.methods.validateInput(this.data.keyWord) == true){
       this.methods.dbExecute(this.data.inputIsShowAdd,this.data.inputIsShowDel,this.data.keyWord)
     }else{
-
       msgList.push({
         speaker: 'server',
         contentType: 'text',
@@ -185,6 +208,7 @@ Page({
        })
     }
   },
+
 
   /**
    * 发送点击监听
@@ -230,6 +254,14 @@ Page({
   },
   
   methods: {
+    validateEmail(str_email){
+      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      if  (re.test(str_email)) { 
+        return  true 
+      }  else  { 
+        return  false 
+      } 
+    },
     validateInput(str_val) { 
       var  pattern =  /^[0-9a-zA-Z,]+$/ 
       if  (pattern.test(str_val) && str_val.length < 190) { 
@@ -251,44 +283,105 @@ Page({
         inputVal
       }); 
      const db = wx.cloud.database()
-     db.collection('xtz_subscription').where({
-       open_id: app.globalData.openid
+     var beautify_str_res = "您没有订阅邮件服务"
+     db.collection('xtz_email_addr').where({
+      open_id: app.globalData.openid
      }).get({
        success: res => {
-        var beautify_str_res = "您没有订阅的地址"
-        if (res.data.length == 1){
-          beautify_str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
-          //beautify_str_res = str_res.split(":")[1].split("}")[0]
-          //beautify_str_res = beautify_str_res.split("\"")[1].replace(/,/g,"\n|\n");
-        }
-        msgList.push({
-          speaker: 'server',
-          contentType: 'text',
-          content: beautify_str_res
-        })
-        inputVal = '';
-         other.setData({
-          msgList,
-          inputVal
-         })
-         console.log('[数据库] [查询记录] 成功: ', res)
+         if (res.data.length == 0) {
+          msgList.push({
+            speaker: 'server',
+            contentType: 'text',
+            content: beautify_str_res
+          })
+          inputVal = '';
+           other.setData({
+            msgList,
+            inputVal
+           })
+
+         }else {
+          db.collection('xtz_subscription').where({
+            open_id: app.globalData.openid
+          }).get({
+            success: res => {   
+             if (res.data.length == 1){
+               beautify_str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
+               //beautify_str_res = str_res.split(":")[1].split("}")[0]
+               //beautify_str_res = beautify_str_res.split("\"")[1].replace(/,/g,"\n|\n");
+               msgList.push({
+                speaker: 'server',
+                contentType: 'text',
+                content: beautify_str_res
+              })
+              inputVal = '';
+               other.setData({
+                msgList,
+                inputVal
+               })
+             }
+              console.log('[数据库] [查询记录] 成功: ', res)
+            },
+            fail: err => {
+              wx.showToast({
+                icon: 'none',
+                title: '查询记录失败'
+              })
+              console.error('[数据库] [查询记录] 失败：', err)
+            }
+          })
+         }
+
+
        },
        fail: err => {
-         wx.showToast({
-           icon: 'none',
-           title: '查询记录失败'
-         })
-         console.error('[数据库] [查询记录] 失败：', err)
+
        }
      })
+
     },
+
+    dbExecuteEmail(str_email) {
+      const db = wx.cloud.database()
+      var other = getCurrentPages()[0]
+      db.collection('xtz_email_addr').add({
+        data: {
+          open_id: app.globalData.openid,
+          email_addr: str_email,
+        },
+        success: res => {
+
+          msgList.push({
+            speaker: 'server',
+            contentType: 'text',
+            content: "邮箱订阅成功，请添加"
+          })
+          inputVal = '';
+           other.setData({
+            msgList,
+            inputVal,
+            isEmail: true
+           })
+         },
+         fail: err => {
+           wx.showToast({
+             icon: 'none',
+             title: 'email存储失败'
+           })
+         }
+      })
+
+
+    },
+    
 
     dbExecute(add_bool, del_bool,str_content) {
       const db = wx.cloud.database()
       var other = getCurrentPages()[0]
       var input_arr = str_content.split(",")
 
-      if (input_arr.length < 6) {      db.collection('xtz_subscription').where({
+      if (input_arr.length < 6) {      
+        db.collection('xtz_subscription').where({
         open_id: app.globalData.openid
       }).get({
         success: res => {

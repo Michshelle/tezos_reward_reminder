@@ -43,27 +43,34 @@ Component({
       var curPage = getCurrentPages()[0]
       curPage.methods.clientSendMessage();   
     },
+
     addAddress() {
-      //允许订阅
-      const templateId = 'pOwTOh7WrXA9ZNlGkmQtPEcZYzxk3SbdXkbVmQ0w03I'
-      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-      wx.requestSubscribeMessage({
-        tmplIds: [templateId],
-        success: (res) => {
-          if (res[templateId] === 'accept') {
-            console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
-          } else {
+      var db = wx.cloud.database()  
+      db.collection('xtz_email_addr').where({
+        open_id: app.globalData.openid
+      }).get({
+        success: res => {
+          var curPage = getCurrentPages()[0]
+          if (res.data.length == 0){
+            curPage.setData({
+              isEmail: false,
+              inputIsShowDel: false,
+              inputIsShowAdd: true
+            })
+          }else{          
+            curPage.setData({
+              isEmail: true,
+              inputIsShowDel: false,
+              inputIsShowAdd: true
+            })
           }
         },
-        fail: (err) => {
-            console.log(err)
-        },
+        fail: err => {
+
+        }
       })
-      var curPage = getCurrentPages()[0]
-      curPage.setData({
-        inputIsShowDel: false,
-        inputIsShowAdd: true
-      })
+
+
     },
     delAddress() {
       var curPage = getCurrentPages()[0]
@@ -73,7 +80,8 @@ Component({
       })
     },
 
-   
   }
+
+   
 
 })
