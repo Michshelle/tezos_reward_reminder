@@ -319,7 +319,6 @@ Page({
             })
 
           }
-
           if (res.data.length == 1 && add_bool==true && del_bool==false){
             var orig_arr = res.data[0].subscribed_addresses
             for (var k=0; k<input_arr.length; k++){

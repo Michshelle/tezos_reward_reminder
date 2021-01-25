@@ -1,28 +1,14 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 
-cloud.init()
+cloud.init({
+  env: 'xtz-maxrich'
+})
 
 // 云函数入口函数
 exports.main = async (event, context) => {
   console.log(event)
-  switch (event.action) {
-    case 'requestSubscribeMessage': {
-      return requestSubscribeMessage(event)
-    }
-    case 'sendSubscribeMessage': {
-      return sendSubscribeMessage(event)
-    }
-    case 'getWXACode': {
-      return getWXACode(event)
-    }
-    case 'getOpenData': {
-      return getOpenData(event)
-    }
-    default: {
-      return
-    }
-  }
+  await sendSubscribeMessage(event)
 }
 
 async function requestSubscribeMessage(event) {
@@ -35,7 +21,7 @@ async function sendSubscribeMessage(event) {
   const { OPENID } = cloud.getWXContext()
 
   const sendResult = await cloud.openapi.subscribeMessage.send({
-    touser: OPENID,
+    touser: 'okS_W5ORy536lzwG-nhqYlQvCwxA',
     templateId: 'pOwTOh7WrXA9ZNlGkmQtPEcZYzxk3SbdXkbVmQ0w03I',
     miniprogram_state: 'developer',
     page: 'pages/openapi/openapi',

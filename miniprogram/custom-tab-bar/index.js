@@ -44,6 +44,21 @@ Component({
       curPage.methods.clientSendMessage();   
     },
     addAddress() {
+      //允许订阅
+      const templateId = 'pOwTOh7WrXA9ZNlGkmQtPEcZYzxk3SbdXkbVmQ0w03I'
+      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+      wx.requestSubscribeMessage({
+        tmplIds: [templateId],
+        success: (res) => {
+          if (res[templateId] === 'accept') {
+            console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+          } else {
+          }
+        },
+        fail: (err) => {
+            console.log(err)
+        },
+      })
       var curPage = getCurrentPages()[0]
       curPage.setData({
         inputIsShowDel: false,

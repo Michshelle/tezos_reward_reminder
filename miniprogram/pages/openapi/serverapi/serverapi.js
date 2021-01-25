@@ -71,9 +71,9 @@ Page({
     })
 
     wx.cloud.callFunction({
-      name: 'openapi',
+      name: 'send',
       data: {
-        action: 'sendSubscribeMessage',
+
         templateId: this.data.templateId,
       },
       success: res => {

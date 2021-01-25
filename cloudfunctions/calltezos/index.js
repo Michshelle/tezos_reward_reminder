@@ -9,7 +9,6 @@ const rp = require('request-promise');
 const baseCycleUri = 'https://api.tzstats.com/explorer/cycle/head' //目前的cycle
 const baseRewardUri = 'https://api.baking-bad.org/v2/rewards' //加上{baker_address}?cycle={cycle}
 const baseFindBakerUri = 'https://api.tzkt.io/v1/rewards/delegators' //加上 /delegator_address/cycle
-var dict_data = null
 var find_baker_info = null
 var find_rewards_info = null
 var current_cycle_info = null
