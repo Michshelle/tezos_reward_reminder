@@ -124,6 +124,7 @@ input {
   color: red;
   border-radius: 0px;
   border-bottom-left-radius: 16rpx;
+  position: flex;
 }
 
 .button2 button{
@@ -132,6 +133,23 @@ input {
   color: black;
   border-radius: 0px;
   border-bottom-right-radius: 16rpx;
+  position: flex;
+}
+
+.button1 button.narrow-button{
+  width: 100%;   
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button2 button.narrow-button{
+  width: 100%;   
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .picker {
