@@ -14,7 +14,6 @@ var find_rewards_info = null
 var current_cycle_info = null
 var beautify_openid = null
 var beautify_addresses = null
-var str_baker_url = null
 var db_current_cycle_info = null
 var db_current_cycle = null
 var current_cycle = null
@@ -28,18 +27,21 @@ var JSONitem = {}
 
 // 云函数入口函数
 exports.main = async(event, context) => {
-  console.log(event)
   try {
     var dict_addr = {}
     var dict_final_info = {}
     var arr_final_content=[] //0: for input addresses, 1: for baker addresses, 2: for reward amount
     var  pattern =  /^[0-9a-zA-Z]+$/ 
     let obj_tezosInputAddresses = await this.fetch_subscriptionDB()
+    let obj_subscirbedEmails = await this.fetch_emailDB()
     var arr_formatted_addresses = [] 
     var arr_formatted_input = []
     var arr_formatted_bakers = []
     var arr_formatted_rewards = []
     var tezosInputAddresses = obj_tezosInputAddresses.data
+    var beautif_openid = null
+    var beautif_email = null
+
     for(var k = 0; k < tezosInputAddresses.length; k++){
 
       arr_formatted_addresses = []
@@ -52,15 +54,12 @@ exports.main = async(event, context) => {
       beautify_addresses = beautify_addresses.split(":")[1].split("}")[0]
       beautify_addresses= beautify_addresses.match(/([^"\s]+)/g) //get rid of "\n"
       for(var i = 0; i < beautify_addresses.length; i++){
-
         if  (pattern.test(beautify_addresses[i])) { 
             arr_formatted_addresses.push(beautify_addresses[i]) 
         }
-      }
-      
+      }     
       dict_addr[beautify_openid] = arr_formatted_addresses
       arr_formatted_addresses = []
-
     }
     db_current_cycle_info = await this.fetch_cycleDB()
     db_current_cycle = db_current_cycle_info.data[0].current_cycle
@@ -119,13 +118,27 @@ exports.main = async(event, context) => {
         arr_formatted_rewards = []
         
       }
+     var arr_email = obj_subscirbedEmails.data
+     var dict_email = {}
+     for( var x=0; x < arr_email.length; x++){
+      beautif_openid = JSON.stringify(arr_email[x],["open_id"],2)
+      beautif_openid = beautif_openid.split(":")[1].split("}")[0]
+      beautif_openid = beautif_openid.split("\"")[1].replace(/,/g,"\n|\n");
+
+      beautif_email = JSON.stringify(arr_email[x],["email_addr"],2)
+      beautif_email = beautif_email.split(":")[1].split("}")[0]
+      beautif_email = beautif_email.split("\"")[1]
+
+      dict_email[beautify_openid] = beautif_email
+     }
+
 
       for (var ind in dict_final_info){
-        await this.write_to_messageQueueDB(current_cycle,current_reward_cycle,ind, dict_final_info[ind])
+        await this.write_to_messageQueueDB(current_cycle,current_reward_cycle,ind, dict_final_info[ind],dict_email)
       }
 
-      await this.write_to_currentCycleDB(current_cycle,current_reward_cycle)
-      console.log("tezos data crawl and db udpate done")
+      //await this.write_to_currentCycleDB(current_cycle,current_reward_cycle)
+      console.log("tezos data crawl and db update done")
 
     }else{
       return 0
@@ -143,6 +156,14 @@ exports.fetch_subscriptionDB = async() => {
   }
 }
 
+exports.fetch_emailDB = async() => {
+  try {
+    return await db.collection('xtz_email_addr').get()
+  } catch(e){
+    console.error(e)
+  }
+}
+
 exports.fetch_cycleDB = async() => {
   try {
     return await db.collection('xtz_current_cycle').where({
@@ -152,6 +173,8 @@ exports.fetch_cycleDB = async() => {
     console.error(e)
   }
 }
+
+
 
 
 
@@ -178,7 +201,7 @@ exports.write_to_currentCycleDB = async(current_cycle,current_reward_cycle) => {
   }
 }
 
-exports.write_to_messageQueueDB = async(current_cycle,current_reward_cycle,key,dict_final_info) => {
+exports.write_to_messageQueueDB = async(current_cycle,current_reward_cycle,key,dict_final_info,dict_email) => {
   try {
     return await db.collection('xtz_messages').add({
       data: {
@@ -186,6 +209,7 @@ exports.write_to_messageQueueDB = async(current_cycle,current_reward_cycle,key,d
         current_reward_cycle: current_reward_cycle,
         update_time: db.serverDate(),
         open_id: key,
+        email_addr: dict_email[key],
         arr_content: dict_final_info,
         done: false
       },
