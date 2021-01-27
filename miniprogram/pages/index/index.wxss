@@ -38,6 +38,7 @@ page {
   position: fixed;
   display: flex;
   align-items: center;
+  z-index: 20;
 }
 
 input {

@@ -4,16 +4,16 @@
   <view wx:for="{{list}}" wx:key="index" class="tab-bar-item" data-path="{{item.pagePath}}" data-index="{{index}}" bindtap="switchTab">
     <!--去掉导航栏的图片<cover-image src="{{selected === index ? item.selectedIconPath : item.iconPath}}"></cover-image>-->
     <view wx:if="{{index === 0}}" >     
-      <button bindtap="clientSendMsg">
+      <button bindtap="clientSendMsg" open-type="getUserInfo">
         我的地址
       </button> 
     </view>
-    <view wx:if="{{index === 1}}" bindtap="addAddress">     
+    <view wx:if="{{index === 1}}" bindtap="addAddress" open-type="getUserInfo">     
       <button>
         添加地址
       </button> 
     </view> 
-    <view wx:if="{{index === 2}}" bindtap="delAddress">     
+    <view wx:if="{{index === 2}}" bindtap="delAddress" open-type="getUserInfo">     
       <button>
         删除地址
       </button> 

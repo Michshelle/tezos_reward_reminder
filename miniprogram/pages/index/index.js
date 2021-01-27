@@ -7,7 +7,6 @@ var windowHeight = wx.getSystemInfoSync().windowHeight;
 var keyHeight = 0;
 
 
-
 /**
  * 初始化数据
  */
@@ -42,7 +41,6 @@ function initData(that) {
  }
 
 
-
 Page({
 
   /**
@@ -66,6 +64,7 @@ Page({
      })
    return
    }
+
     // 获取用户信息
     wx.getSetting({
       success: res => {
@@ -79,14 +78,16 @@ Page({
               })
             }
           })
-        }
+        } 
+      },
+      fail: err => {
+        console.log(err)
       }
     })
     wx.cloud.callFunction({
       name: 'login',
       data: {},
       success: res => {
-
         app.globalData.openid = res.result.openid
       },
       fail: err => {
@@ -283,12 +284,13 @@ Page({
         inputVal
       }); 
      const db = wx.cloud.database()
-     var beautify_str_res = "您没有订阅邮件服务"
+     //var beautify_str_res = ""
      db.collection('xtz_email_addr').where({
       open_id: app.globalData.openid
      }).get({
        success: res => {
          if (res.data.length == 0) {
+          var beautify_str_res = "您没有订阅邮件服务"
           msgList.push({
             speaker: 'server',
             contentType: 'text',
@@ -306,7 +308,7 @@ Page({
           }).get({
             success: res => {   
              if (res.data.length == 1){
-               beautify_str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
+               var beautify_str_res = JSON.stringify(res.data,["subscribed_addresses"],2)
                //beautify_str_res = str_res.split(":")[1].split("}")[0]
                //beautify_str_res = beautify_str_res.split("\"")[1].replace(/,/g,"\n|\n");
                msgList.push({
@@ -319,6 +321,19 @@ Page({
                 msgList,
                 inputVal
                })
+             }else{
+              var beautify_str_res = "您没有订阅地址"
+              msgList.push({
+                speaker: 'server',
+                contentType: 'text',
+                content: beautify_str_res
+              })
+              inputVal = '';
+               other.setData({
+                msgList,
+                inputVal
+               })
+
              }
               console.log('[数据库] [查询记录] 成功: ', res)
             },
